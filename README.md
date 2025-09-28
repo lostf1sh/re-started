@@ -134,5 +134,4 @@ If you encounter any issues or have questions:
 
 ---
 
-**Made by [refact0r](https://refact0r.dev), updated by [lostf1sh](https://f1sh.dev)
-*Start your day right with re-started!*
+**Made by [refact0r](https://refact0r.dev), updated by [lostf1sh](https://f1sh.dev)**
