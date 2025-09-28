@@ -1,10 +1,12 @@
 <script>
-    import Todoist from './lib/components/Todoist.svelte'
+    import Tasks from './lib/components/Tasks.svelte'
+    import NewsFeed from './lib/components/NewsFeed.svelte'
     import Weather from './lib/components/Weather.svelte'
     import Links from './lib/components/Links.svelte'
     import Clock from './lib/components/Clock.svelte'
     import Stats from './lib/components/Stats.svelte'
     import Settings from './lib/components/Settings.svelte'
+    import { settings } from './lib/settings-store.svelte.js'
     import '@fontsource-variable/geist-mono'
 
     let showSettings = $state(false)
@@ -22,7 +24,11 @@
         </div>
         <div class="widgets">
             <Weather />
-            <Todoist />
+            {#if settings.widgetType === 'tasks'}
+                <Tasks />
+            {:else if settings.widgetType === 'news'}
+                <NewsFeed />
+            {/if}
         </div>
         <Links />
     </div>

@@ -1,13 +1,30 @@
 :root {
-    --bg-1: oklch(19% 0 0);
-    --bg-2: oklch(23% 0 0);
-    --bg-3: oklch(27% 0 0);
-    --bg-4: oklch(31% 0 0);
-    --txt-4: oklch(40% 0 0);
-    --txt-3: oklch(50% 0 0);
-    --txt-2: oklch(75% 0 0);
-    --txt-1: oklch(90% 0 0);
-    --txt-err: oklch(70% 0.11 0);
+    /* Catppuccin Mocha */
+    --bg-1: #1e1e2e; /* base */
+    --bg-2: #313244; /* surface0 */
+    --bg-3: #45475a; /* surface1 */
+    --bg-4: #585b70; /* surface2 */
+    --txt-4: #6c7086; /* overlay0 */
+    --txt-3: #a6adc8; /* subtext0 */
+    --txt-2: #cdd6f4; /* subtext1 */
+    --txt-1: #f5e0dc; /* text */
+    --txt-err: #f38ba8; /* red */
+    
+    /* Catppuccin Mocha Accent Colors */
+    --accent-rosewater: #f5e0dc;
+    --accent-flamingo: #f2cdcd;
+    --accent-pink: #f5c2e7;
+    --accent-mauve: #cba6f7;
+    --accent-red: #f38ba8;
+    --accent-maroon: #eba0ac;
+    --accent-peach: #fab387;
+    --accent-yellow: #f9e2af;
+    --accent-green: #a6e3a1;
+    --accent-teal: #94e2d5;
+    --accent-sky: #89dceb;
+    --accent-sapphire: #74c7ec;
+    --accent-blue: #89b4fa;
+    --accent-lavender: #b4befe;
 }
 
 * {

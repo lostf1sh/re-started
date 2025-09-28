@@ -1,62 +1,138 @@
 # re-started
 
-a tui-style browser startpage, built with svelte.
+A modern, customizable browser startpage built with Svelte. Features a clean TUI-style interface with task management, news feed, weather, and more.
 
-features:
+![re-started preview](./src/assets/page.png)
 
-- todoist tasks integrationz
-- weather (from open-meteo)
-- customizable quick links
-- stats (load time, ping, fps, viewport size)
-- lightweight & performant (&lt;90kb including fonts, loads in &lt;50ms)
+## ✨ Features
 
-features that i will add:
-- catppuccin mocha theme
-- google keep task integration
+### 🎯 **Core Functionality**
+- **Task Management** - Local task system with due dates, notes, and completion tracking
+- **News Feed** - Hacker News and Reddit integration with real-time updates
+- **Weather Widget** - Current weather and 24h forecast using OpenMeteo API
+- **Quick Links** - Customizable link collection with drag-and-drop organization
+- **System Stats** - Load time, ping, FPS, and viewport size monitoring
 
-<img width="2331" height="1319" alt="image" src="https://github.com/user-attachments/assets/e3164af7-fc42-4caf-81ee-a049e05b84c7" />
+### 🎨 **Customization**
+- **Multiple Themes** - Catppuccin Mocha (default), Dark, Light, and Custom theme builder
+- **Widget Selection** - Choose between Tasks or News Feed
+- **Custom Colors** - Full theme customization with color picker
+- **Responsive Design** - Works on all screen sizes
+- **Backup & Restore** - Export/import all settings and data
 
-## installation
+### ⚡ **Performance**
+- **Lightweight** - <90kb including fonts, loads in <50ms
+- **No External Dependencies** - Pure Svelte with minimal footprint
+- **Offline Capable** - Works without internet (except weather/news)
 
-### firefox
+## 🚀 Quick Start
 
-1. download the latest .xpi file from the `releases` folder.
-2. go to the firefox extensions manager (`about:addons`)
-3. click the gear icon in the top right.
-4. click "Install Add-on From File" and select the .xpi file you downloaded.
-5. make sure to click "Add" and "Keep Changes".
+### Option 1: Live Demo
+Visit the [live demo](https://start.f1sh.dev) to try it out immediately.
 
-### chrome/edge
+### Option 2: Self-Hosted
+1. Clone this repository
+2. Run `npm install`
+3. Run `npm run dev` for development or `npm run build` for production
+4. Deploy the `dist` folder to any static hosting service
 
-1. clone/download this repo.
-2. run `npm i` (you must have node.js).
-3. run `npm run build`. you should see it create a `dist` folder.
-4. open the `manifest.json` file in `dist`.
-5. delete these 3 lines from `manifest.json`:
+## 📖 Usage Guide
 
-```json
-    "chrome_settings_overrides": {
-        "homepage": "index.html"
-    },
+### 🎛️ **Settings Panel**
+- Hover over the top-right corner to reveal the settings button
+- Configure themes, widgets, location, and more
+- All settings are automatically saved locally
+
+### 📝 **Task Management**
+- **Add Tasks**: Use the settings panel to add new tasks
+- **Complete Tasks**: Click the checkbox to mark as complete
+- **Edit Tasks**: Click on task titles to edit inline
+- **Delete Tasks**: Hover over tasks to reveal the delete button
+- **Due Dates**: Set due dates and see overdue tasks highlighted
+
+### 📰 **News Feed**
+- **Switch Sources**: Toggle between Hacker News and Reddit
+- **Auto Refresh**: Updates every 5 minutes automatically
+- **External Links**: Click titles to open articles in new tabs
+- **Compact View**: Optimized for quick scanning
+
+### 🌤️ **Weather Widget**
+- **Location**: Set your latitude/longitude in settings
+- **Units**: Choose between Fahrenheit/Celsius and MPH/KMH
+- **Forecast**: 24-hour weather forecast with hourly updates
+
+### 💾 **Backup & Restore**
+- **Export**: Download a complete backup of all your data
+- **Import**: Upload a backup file to restore your settings
+- **Drag & Drop**: Simply drag backup files onto the import area
+- **Cross-Device**: Use backups to sync between devices
+
+
+## 🛠️ **Development**
+
+### Prerequisites
+- Node.js 18+ 
+- npm or yarn
+
+### Setup
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/re-started.git
+cd re-started
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
 ```
 
-6. go to the chrome extensions manager (`chrome://extensions`).
-7. turn on developer mode in the top right.
-8. click "Load unpacked" in the top left.
-9. select the `dist` folder.
 
-### development / building from source
+### Self-Hosted
+1. Build: `npm run build`
+2. Upload `dist` contents to your web server
+3. Configure your web server to serve `index.html` for all routes
 
-1. clone/download this repo.
-2. run `npm i` (you must have node.js).
-3. run `npm run dev` to start in development mode. the page will run at `http://localhost:5173`.
-4. run `npm run build` to build for production.
+## 📱 **Browser Support**
 
-## usage tips
+- ✅ Chrome 90+
+- ✅ Firefox 88+
+- ✅ Safari 14+
+- ✅ Edge 90+
 
-- hover your cursor on the top right corner of the startpage, and you should see a settings button appear. click it to configure settings.
-- to get your todoist api token, open the todoist website and click your profile in the top left. then go to "Settings" > "Integrations" > "Developer" > "Copy API Token".
-- the 'x tasks' text is also a clickable link to todoist.
-- you can force a refresh of the weather and todoist widgets by clicking the top left panel labels.
-- the ping stat is based on how long a request to <https://www.google.com/generate_204> takes. don't take it too seriously.
-- here's a matching [firefox color theme](https://color.firefox.com/?theme=XQAAAAK3BAAAAAAAAABBqYhm849SCicxcUhA3DJozHnOMuotJJDtxcajvY2nrbwtWf53IW6FuMhmsQBmHjQtYV0LyoGIJnESUiSA8WGCMfXU1SYqmE_CaU8iA8bQXAYc2jrXIT6bjoi8T-cSTCi2_9o7kcESfauVKnMZKEKJIeeuT9qsP4Z_T2ya4LBqvZWjm1-pHOmWMq1OU0wrgs4bkzHQWozn4dcm22eBmWyWR55FkcmEsPvvHzhHCZ2ZMQrPXQqrOBLr79GTkJUGa5oslhWTp2LYqdD2gNQ1a8_c5-F91bPVmQerXZWpp-OZ11D1Ai6t1ydqjbVKD3RrGXYJwhcQaAxCKa_ft4VoGrVBq8AXYeJOZdXuOxnYXGhOXXSK_NybBfJLm-2W28qSSdoiW0pTL-iFan3xQQeC0WlSrnRYrRjh7HkgLuI-Ft8Fq5kNC7nVXoo8j9Ml_q2AO_RhE116j_MECbspxaJP58juayX_wNty3V2g5zUsf0gSqpEWGT02oZAF2z6LABKRWTO28wIoMUDvj9WAQGsup95WAmNW7g4WMEIgaiJhmBz9koq0wV7gHQtJB_0x2lJ7WQ488bJi8LvqnW-VT3kZ3GJtyv-yXmRJ)!
+## 🤝 **Contributing**
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+### Development Guidelines
+1. Follow the existing code style
+2. Add comments for complex logic
+3. Test your changes thoroughly
+4. Update documentation if needed
+
+## 📄 **License**
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 **Acknowledgments**
+
+- [Svelte](https://svelte.dev/) - The amazing reactive framework
+- [OpenMeteo](https://open-meteo.com/) - Free weather API
+- [Hacker News API](https://github.com/HackerNews/API) - News data
+- [Catppuccin](https://github.com/catppuccin/catppuccin) - Beautiful color palette
+
+## 📞 **Support**
+
+If you encounter any issues or have questions:
+
+1. Check the [Issues](https://github.com/lostf1sh/re-started/issues) page
+2. Create a new issue with detailed information
+3. Join our community discussions
+
+---
+
+**Made by [refact0r](https://refact0r.dev), updated by [lostf1sh](https://f1sh.dev)
+*Start your day right with re-started!*
