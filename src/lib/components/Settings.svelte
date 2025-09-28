@@ -535,9 +535,9 @@
                 re-start
                 {#if version}v{version}
                 {/if} • made with ❤️ by
-                <a href="https://refact0r.dev" target="_blank">refact0r</a>
+                <a href="https://f1sh.dev" target="_blank">f1sh</a>
                 •
-                <a href="https://github.com/refact0r/re-start" target="_blank"
+                <a href="https://github.com/lostf1sh/re-started" target="_blank"
                     >github</a
                 >
             </div>
