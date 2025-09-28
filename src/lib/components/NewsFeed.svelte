@@ -239,17 +239,6 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: 1rem;
-        position: relative;
-    }
-    .widget-label {
-        position: absolute;
-        top: -14px;
-        left: 8px;
-        background-color: var(--bg-1);
-        color: var(--txt-4);
-        padding: 0 4px;
-        z-index: 10;
-        font-size: 0.875rem;
     }
     .source-selector {
         display: flex;
