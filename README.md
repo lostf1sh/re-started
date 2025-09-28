@@ -1,4 +1,4 @@
-# re-start
+# re-started
 
 a tui-style browser startpage, built with svelte.
 
@@ -9,6 +9,10 @@ features:
 - customizable quick links
 - stats (load time, ping, fps, viewport size)
 - lightweight & performant (&lt;90kb including fonts, loads in &lt;50ms)
+
+features that i will add:
+- catppuccin mocha theme
+- google keep task integration
 
 <img width="2331" height="1319" alt="image" src="https://github.com/user-attachments/assets/e3164af7-fc42-4caf-81ee-a049e05b84c7" />
 
