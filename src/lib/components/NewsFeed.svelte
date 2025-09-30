@@ -8,17 +8,76 @@
     let selectedSource = $state('hackernews')
     let refreshInterval = null
 
+    const CACHE_PREFIX = 'news_cache_'
+    const CACHE_TTL_MS = 3 * 60 * 1000
+    const canUseStorage = typeof window !== 'undefined' && 'localStorage' in window
+
     const newsSources = {
         hackernews: {
             name: 'Hacker News',
-            url: 'https://hacker-news.firebaseio.com/v0/topstories.json',
-            getArticleUrl: (id) => `https://hacker-news.firebaseio.com/v0/item/${id}.json`
+            url: 'https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=10'
         },
         reddit: {
             name: 'Reddit',
-            url: 'https://www.reddit.com/r/programming/hot.json',
-            getArticleUrl: null
+            url: 'https://www.reddit.com/r/programming/hot.json?limit=10'
         }
+    }
+
+    function getCacheKey(source) {
+        return `${CACHE_PREFIX}${source}`
+    }
+
+    function serializeArticles(items = []) {
+        return items.map(article => ({
+            ...article,
+            time: article.time instanceof Date ? article.time.toISOString() : article.time
+        }))
+    }
+
+    function deserializeArticles(items = []) {
+        return items.map(article => ({
+            ...article,
+            time: article.time ? new Date(article.time) : new Date()
+        }))
+    }
+
+    function readCachedArticles(source) {
+        if (!canUseStorage) return null
+
+        try {
+            const raw = localStorage.getItem(getCacheKey(source))
+            if (!raw) return null
+
+            const parsed = JSON.parse(raw)
+            if (!parsed || !Array.isArray(parsed.data) || typeof parsed.timestamp !== 'number') {
+                return null
+            }
+
+            return parsed
+        } catch (err) {
+            console.warn('Failed to parse cached news data', err)
+            return null
+        }
+    }
+
+    function writeCachedArticles(source, data) {
+        if (!canUseStorage) return
+
+        const payload = {
+            data: serializeArticles(data),
+            timestamp: Date.now()
+        }
+
+        try {
+            localStorage.setItem(getCacheKey(source), JSON.stringify(payload))
+        } catch (err) {
+            console.warn('Failed to write cached news data', err)
+        }
+    }
+
+    function isCacheFresh(cache) {
+        if (!cache) return false
+        return Date.now() - cache.timestamp < CACHE_TTL_MS
     }
 
     function handleVisibilityChange() {
@@ -29,98 +88,181 @@
             const fiveMinutes = 5 * 60 * 1000
             
             if (!lastRefresh || (now - parseInt(lastRefresh)) > fiveMinutes) {
-                loadNews()
+                loadNews({ force: true })
             }
         }
     }
 
-    async function loadNews() {
-        if (loading) return
-        
-        loading = true
-        error = ''
-        
+    async function loadNews({ source = selectedSource, force = false, silent = false } = {}) {
+        const isActiveSource = source === selectedSource
+
+        if (isActiveSource && loading && !force) {
+            return
+        }
+
+        const cached = readCachedArticles(source)
+
+        if (!force && cached) {
+            if (isActiveSource) {
+                articles = deserializeArticles(cached.data)
+            }
+
+            if (isCacheFresh(cached)) {
+                return
+            }
+        }
+
+        if (isActiveSource && !silent) {
+            loading = true
+            error = ''
+        }
+
         try {
-            if (selectedSource === 'hackernews') {
-                await loadHackerNews()
-            } else if (selectedSource === 'reddit') {
-                await loadReddit()
+            const freshArticles = await fetchArticles(source)
+            writeCachedArticles(source, freshArticles)
+
+            if (isActiveSource) {
+                articles = freshArticles
+                error = ''
             }
         } catch (err) {
-            error = `Failed to load ${selectedSource}: ${err.message}`
             console.error('News loading error:', err)
+
+            if (!cached || !cached.data?.length) {
+                if (isActiveSource) {
+                    error = `Failed to load ${newsSources[source]?.name || source}: ${err.message}`
+                }
+            } else if (isActiveSource) {
+                error = `Showing cached ${newsSources[source]?.name || source} stories (refresh failed: ${err.message})`
+            }
         } finally {
-            loading = false
-            // Save last refresh time
-            localStorage.setItem('news_last_refresh', Date.now().toString())
+            if (isActiveSource && !silent) {
+                loading = false
+            }
+
+            if (isActiveSource && canUseStorage) {
+                localStorage.setItem('news_last_refresh', Date.now().toString())
+            }
         }
     }
 
-    async function loadHackerNews() {
-        // Get top story IDs
-        const response = await fetch(newsSources.hackernews.url)
-        if (!response.ok) throw new Error(`HTTP ${response.status}`)
-        
-        const storyIds = await response.json()
-        const topIds = storyIds.slice(0, 5) // Get top 5
-        
-        // Get story details
-        const storyPromises = topIds.map(id => 
-            fetch(newsSources.hackernews.getArticleUrl(id))
-                .then(res => res.json())
-        )
-        
-        const stories = await Promise.all(storyPromises)
-        
-        articles = stories
-            .filter(story => story && story.title && story.url)
-            .map(story => ({
-                id: story.id,
-                title: story.title,
-                url: story.url,
-                score: story.score || 0,
-                comments: story.descendants || 0,
-                time: new Date(story.time * 1000),
-                source: 'Hacker News',
-                domain: extractDomain(story.url)
-            }))
+    async function fetchArticles(source) {
+        if (source === 'hackernews') {
+            return fetchHackerNews()
+        }
+
+        if (source === 'reddit') {
+            return fetchReddit()
+        }
+
+        throw new Error(`Unsupported source: ${source}`)
     }
 
-    async function loadReddit() {
+    async function fetchHackerNews() {
         try {
-            const response = await fetch(newsSources.reddit.url, {
-                headers: {
-                    'User-Agent': 're-started/1.0 (https://github.com/lostf1sh/re-started)'
+            const response = await fetch(newsSources.hackernews.url)
+            if (!response.ok) throw new Error(`HTTP ${response.status}`)
+
+            const payload = await response.json()
+            const hits = Array.isArray(payload?.hits) ? payload.hits : []
+
+            const topStories = hits
+                .filter(story => story)
+                .slice(0, 5)
+                .map(story => {
+                    const url = story.url || `https://news.ycombinator.com/item?id=${story.objectID}`
+                    return {
+                        id: story.objectID,
+                        title: story.title || story.story_title || 'Untitled',
+                        url,
+                        score: story.points || 0,
+                        comments: story.num_comments || 0,
+                        time: new Date(story.created_at),
+                        source: 'Hacker News',
+                        domain: extractDomain(url)
+                    }
+                })
+
+            if (topStories.length) {
+                return topStories
+            }
+
+            throw new Error('Empty response')
+        } catch (err) {
+            console.warn('Fast Hacker News API failed, falling back to Firebase API', err)
+            return fetchHackerNewsFallback()
+        }
+    }
+
+    async function fetchHackerNewsFallback() {
+        const storiesEndpoint = 'https://hacker-news.firebaseio.com/v0/topstories.json'
+        const itemEndpoint = (id) => `https://hacker-news.firebaseio.com/v0/item/${id}.json`
+
+        const response = await fetch(storiesEndpoint)
+        if (!response.ok) throw new Error(`HTTP ${response.status}`)
+
+        const storyIds = await response.json()
+        const topIds = storyIds.slice(0, 5)
+
+        const storyPromises = topIds.map(id =>
+            fetch(itemEndpoint(id)).then(res => {
+                if (!res.ok) throw new Error(`HTTP ${res.status}`)
+                return res.json()
+            })
+        )
+
+        const stories = await Promise.all(storyPromises)
+
+        return stories
+            .filter(story => story && story.title && (story.url || story.id))
+            .map(story => {
+                const url = story.url || `https://news.ycombinator.com/item?id=${story.id}`
+                return {
+                    id: story.id,
+                    title: story.title,
+                    url,
+                    score: story.score || 0,
+                    comments: story.descendants || 0,
+                    time: new Date(story.time * 1000),
+                    source: 'Hacker News',
+                    domain: extractDomain(url)
                 }
             })
-            
-            if (!response.ok) {
-                throw new Error(`Reddit API error: ${response.status}`)
+    }
+
+    async function fetchReddit() {
+        const response = await fetch(newsSources.reddit.url, {
+            headers: {
+                'User-Agent': 're-started/1.0 (https://github.com/lostf1sh/re-started)'
             }
-            
-            const data = await response.json()
-            
-            if (!data.data || !data.data.children) {
-                throw new Error('Invalid Reddit API response')
-            }
-            
-            articles = data.data.children
-                .slice(0, 5)
-                .map(post => ({
-                    id: post.data.id,
-                    title: post.data.title,
-                    url: post.data.url,
-                    score: post.data.score || 0,
-                    comments: post.data.num_comments || 0,
-                    time: new Date(post.data.created_utc * 1000),
-                    source: 'Reddit',
-                    domain: extractDomain(post.data.url)
-                }))
-        } catch (err) {
-            console.error('Reddit loading error:', err)
-            // Fallback to Hacker News if Reddit fails
-            await loadHackerNews()
+        })
+
+        if (!response.ok) {
+            throw new Error(`Reddit API error: ${response.status}`)
         }
+
+        const data = await response.json()
+
+        if (!data?.data?.children) {
+            throw new Error('Invalid Reddit API response')
+        }
+
+        const posts = data.data.children.slice(0, 5)
+
+        if (!posts.length) {
+            throw new Error('Empty Reddit response')
+        }
+
+        return posts.map(post => ({
+            id: post.data.id,
+            title: post.data.title,
+            url: post.data.url,
+            score: post.data.score || 0,
+            comments: post.data.num_comments || 0,
+            time: new Date(post.data.created_utc * 1000),
+            source: 'Reddit',
+            domain: extractDomain(post.data.url)
+        }))
     }
 
     function extractDomain(url) {
@@ -146,20 +288,25 @@
     }
 
     function refreshNews() {
-        loadNews()
+        loadNews({ force: true })
     }
 
     function changeSource(source) {
         selectedSource = source
-        loadNews()
+        loadNews({ source })
     }
 
     onMount(() => {
         loadNews()
+        // Prefetch the other source to keep caches warm without blocking initial render
+        Promise.resolve().then(() => {
+            const otherSource = selectedSource === 'hackernews' ? 'reddit' : 'hackernews'
+            loadNews({ source: otherSource, silent: true })
+        })
         document.addEventListener('visibilitychange', handleVisibilityChange)
         
         // Auto-refresh every 5 minutes
-        refreshInterval = setInterval(loadNews, 5 * 60 * 1000)
+        refreshInterval = setInterval(() => loadNews({ force: true }), 5 * 60 * 1000)
     })
 
     onDestroy(() => {
