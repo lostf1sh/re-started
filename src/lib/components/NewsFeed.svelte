@@ -416,10 +416,16 @@
     .refresh-btn:hover {
         background: var(--bg-2);
         color: var(--txt-1);
+        transform: rotate(360deg);
     }
     .refresh-btn:disabled {
         opacity: 0.5;
         cursor: not-allowed;
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
     }
     .loading {
         text-align: center;
@@ -431,20 +437,41 @@
         max-height: 15rem;
         overflow: auto;
         scrollbar-width: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
     }
     .news-list::-webkit-scrollbar {
         display: none;
     }
     .article {
-        padding: 0.5rem;
-        margin-bottom: 0.25rem;
-        background: var(--bg-2);
+        padding: 0.75rem;
+        background: var(--bg-1);
         border: 2px solid var(--bg-3);
-        transition: all 0.2s;
+        transition: all 0.3s ease;
+        border-radius: 0.5rem;
+        position: relative;
+        isolation: isolate;
+        animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+    }
+    .article::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        border: 1px dashed rgba(166, 173, 200, 0.2);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
     }
     .article:hover {
-        background: var(--bg-3);
-        border-color: var(--txt-3);
+        background: var(--bg-2);
+        border-color: var(--txt-4);
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    }
+    .article:hover::after {
+        opacity: 1;
     }
     .article-title {
         color: var(--txt-1);
@@ -452,13 +479,15 @@
         font-weight: 500;
         line-height: 1.3;
         display: block;
-        margin-bottom: 0.25rem;
+        margin-bottom: 0.35rem;
         word-wrap: break-word;
-        font-size: 0.9rem;
+        font-size: 0.95rem;
+        transition: color 0.2s ease;
     }
     .article-title:hover {
         color: var(--txt-2);
         text-decoration: underline;
+        text-shadow: 0 0 10px rgba(180, 190, 254, 0.4);
     }
     .article-footer {
         display: flex;
@@ -471,8 +500,10 @@
         font-size: 0.7rem;
         white-space: nowrap;
         background: var(--bg-1);
-        padding: 0.2rem 0.4rem;
+        padding: 0.2rem 0.5rem;
         border: 1px solid var(--bg-3);
+        border-radius: 999px;
+        text-transform: lowercase;
     }
     .article-meta {
         display: flex;

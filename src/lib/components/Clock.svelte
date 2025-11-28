@@ -82,8 +82,12 @@
         color: var(--txt-1);
         line-height: 3.5rem;
         margin: 0 0 0.5rem 0;
+        animation: textGlow 4s ease-in-out infinite;
     }
-    .colon,
+    .colon {
+        color: var(--txt-2);
+        animation: blink 1s ease-in-out infinite;
+    }
     .ampm {
         color: var(--txt-2);
     }

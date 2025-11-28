@@ -151,13 +151,21 @@
         font-weight: 300;
         color: var(--txt-1);
         line-height: 2.625rem;
+        transition: all 0.3s ease;
+        animation: textGlow 6s ease-in-out infinite;
     }
     .description {
         font-size: 1.25rem;
         color: var(--txt-3);
+        transition: all 0.3s ease;
+    }
+    .panel:hover .temp {
+        transform: scale(1.02);
     }
     .value {
         color: var(--txt-1);
+        font-weight: 500;
+        transition: all 0.2s ease;
     }
     .stats {
         display: flex;
@@ -169,12 +177,16 @@
     }
     .forecast-time {
         text-align: end;
+        transition: all 0.2s ease;
     }
     .forecast-temp {
         text-align: end;
         color: var(--txt-1);
+        font-weight: 500;
+        transition: all 0.2s ease;
     }
     .forecast-weather {
         color: var(--txt-3);
+        transition: all 0.2s ease;
     }
 </style>
