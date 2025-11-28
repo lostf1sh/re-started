@@ -27,6 +27,84 @@
     --accent-lavender: #b4befe;
 }
 
+/* ═══════════════════════════════════════════════════════════
+   KEYFRAME ANIMATIONS
+   ═══════════════════════════════════════════════════════════ */
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes blink {
+    0%, 49% {
+        opacity: 1;
+    }
+    50%, 100% {
+        opacity: 0.3;
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.6;
+    }
+}
+
+@keyframes scanline {
+    0% {
+        transform: translateY(-100%);
+    }
+    100% {
+        transform: translateY(100vh);
+    }
+}
+
+@keyframes glow {
+    0%, 100% {
+        box-shadow: 0 0 5px var(--bg-3), 0 0 10px var(--bg-3);
+    }
+    50% {
+        box-shadow: 0 0 10px var(--txt-4), 0 0 20px var(--bg-3), 0 0 30px var(--bg-3);
+    }
+}
+
+@keyframes textGlow {
+    0%, 100% {
+        text-shadow: 0 0 5px rgba(180, 190, 254, 0.3);
+    }
+    50% {
+        text-shadow: 0 0 10px rgba(180, 190, 254, 0.5), 0 0 20px rgba(180, 190, 254, 0.2);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+@keyframes typing {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+}
+
 * {
     box-sizing: border-box;
 }
@@ -37,16 +115,63 @@ html {
 body {
     margin: 0;
     padding: 0;
-    background: var(--bg-1);
+    background:
+        radial-gradient(circle at 20% 20%, rgba(116, 199, 236, 0.15), transparent 45%),
+        radial-gradient(circle at 80% 0%, rgba(203, 166, 247, 0.1), transparent 40%),
+        var(--bg-1);
     color: var(--txt-2);
 
     font-family: 'Geist Mono Variable', monospace;
     font-weight: 400;
     font-size: 100%;
     line-height: 1.5;
+    position: relative;
+    overflow-x: hidden;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        repeating-linear-gradient(
+            0deg,
+            rgba(0, 0, 0, 0.15),
+            rgba(0, 0, 0, 0.15) 1px,
+            transparent 1px,
+            transparent 2px
+        );
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.25;
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    top: -100%;
+    left: 0;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(
+        to bottom,
+        transparent,
+        rgba(180, 190, 254, 0.1),
+        transparent
+    );
+    box-shadow: 0 0 20px 5px rgba(180, 190, 254, 0.05);
+    animation: scanline 8s linear infinite;
+    pointer-events: none;
+    z-index: 1;
 }
 
 #app {
+    position: relative;
+    z-index: 2;
+    width: 100%;
 }
 
 h1,
@@ -64,15 +189,56 @@ button {
     cursor: pointer;
     padding: 0;
     color: var(--txt-3);
+    transition: all 0.3s ease;
 
     &:hover {
         color: var(--txt-2);
+        text-shadow: 0 0 8px rgba(180, 190, 254, 0.4);
     }
 }
 .panel {
     padding: 1.5rem;
     border: 2px solid var(--bg-3);
     position: relative;
+    background: var(--bg-1);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) backwards;
+    animation-delay: var(--panel-delay, 0s);
+    overflow: hidden;
+}
+
+.panel::before,
+.panel::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.panel::before {
+    background: radial-gradient(circle at top, rgba(180, 190, 254, 0.08), transparent 55%);
+    opacity: 0;
+}
+
+.panel::after {
+    border: 1px dashed rgba(166, 173, 200, 0.3);
+    opacity: 0;
+}
+
+.panel:hover {
+    border-color: var(--txt-4);
+    box-shadow: 
+        0 0 30px rgba(0, 0, 0, 0.4),
+        0 0 15px rgba(108, 112, 134, 0.2),
+        inset 0 0 30px rgba(108, 112, 134, 0.05);
+    transform: translateY(-2px);
+}
+
+.panel:hover::before,
+.panel:hover::after {
+    opacity: 1;
 }
 
 .panel-label,
@@ -80,19 +246,29 @@ button {
     position: absolute;
     top: -14px;
     left: 8px;
-    background-color: var(--bg-1);
+    background: linear-gradient(90deg, var(--bg-1) 0%, var(--bg-2) 100%);
     color: var(--txt-4);
-    padding: 0 4px;
-    z-index: 10;
+    padding: 0 8px;
+    z-index: 11;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-size: 0.65rem;
+    border: 1px solid var(--bg-4);
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .widget-label:hover:not(:disabled) {
     color: var(--txt-3);
+    border-color: var(--txt-4);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
 }
 
 .widget-label:disabled {
     cursor: default;
     color: var(--txt-4);
+    opacity: 0.6;
 }
 
 a {
@@ -111,4 +287,34 @@ input {
 
 .error {
     color: var(--txt-err);
+}
+
+::selection {
+    background: var(--accent-mauve);
+    color: var(--bg-1);
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-2);
+    border-left: 1px solid var(--bg-3);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--bg-4);
+    border-left: 1px solid var(--txt-4);
+    transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--txt-4);
+}
+
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--bg-4) var(--bg-2);
 }

@@ -254,10 +254,15 @@
         border-radius: 0.25rem;
         cursor: pointer;
         font-size: 0.875rem;
+        transition: all 0.2s ease;
+    }
+    .filter-btn:hover {
+        border-color: var(--txt-4);
     }
     .filter-btn.active {
         background: var(--bg-3);
         color: var(--txt-1);
+        border-color: var(--txt-4);
     }
     .tasks {
         max-height: 15rem;
@@ -271,10 +276,13 @@
         padding: 0.5rem;
         margin-bottom: 0.25rem;
         border-radius: 0.25rem;
-        transition: background-color 0.2s;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        animation: fadeInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) backwards;
     }
     .task:hover {
         background: var(--bg-2);
+        transform: translateX(4px);
+        box-shadow: -2px 0 0 var(--txt-4);
     }
     .task.editing {
         background: var(--bg-2);

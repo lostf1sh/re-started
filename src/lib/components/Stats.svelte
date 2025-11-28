@@ -103,7 +103,17 @@
 </div>
 
 <style>
+    .panel {
+        transition: all 0.3s ease;
+    }
     .value {
         color: var(--txt-1);
+        font-weight: 500;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+    .panel:hover .value {
+        text-shadow: 0 0 8px rgba(180, 190, 254, 0.4);
+        transform: scale(1.05);
     }
 </style>
