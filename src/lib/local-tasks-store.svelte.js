@@ -103,29 +103,39 @@ export function clearCompletedTasks() {
 }
 
 export function sortTasks(tasksToSort) {
-    return tasksToSort.sort((a, b) => {
+    // Pre-convert dates to timestamps for faster comparison
+    const tasksWithTimestamps = tasksToSort.map(task => ({
+        task,
+        dueTime: task.due ? new Date(task.due).getTime() : null,
+        createdTime: task.createdAt ? new Date(task.createdAt).getTime() : 0,
+        completedTime: task.completedAt ? new Date(task.completedAt).getTime() : null
+    }))
+    
+    tasksWithTimestamps.sort((a, b) => {
         // Completed tasks last
-        if (a.completed !== b.completed) {
-            return a.completed ? 1 : -1
+        if (a.task.completed !== b.task.completed) {
+            return a.task.completed ? 1 : -1
         }
         
         // Completed tasks: sort by completed date (recent first)
-        if (a.completed) {
-            if (a.completedAt && b.completedAt) {
-                return new Date(b.completedAt) - new Date(a.completedAt)
+        if (a.task.completed) {
+            if (a.completedTime && b.completedTime) {
+                return b.completedTime - a.completedTime
             }
         }
         
         // Active tasks: sort by due date if available
-        if (a.due && b.due) {
-            return new Date(a.due) - new Date(b.due)
+        if (a.dueTime && b.dueTime) {
+            return a.dueTime - b.dueTime
         }
-        if (a.due && !b.due) return -1
-        if (!a.due && b.due) return 1
+        if (a.dueTime && !b.dueTime) return -1
+        if (!a.dueTime && b.dueTime) return 1
         
         // Then by creation date
-        return new Date(a.createdAt) - new Date(b.createdAt)
+        return a.createdTime - b.createdTime
     })
+    
+    return tasksWithTimestamps.map(item => item.task)
 }
 
 export function isTaskOverdue(task) {

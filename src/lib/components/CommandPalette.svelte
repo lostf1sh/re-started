@@ -52,6 +52,15 @@
         return filteredCommands.flatMap(group => group.items)
     })
     
+    // Precompute a map of item id -> global index for O(1) lookups in template
+    let itemIndexMap = $derived.by(() => {
+        const map = new Map()
+        flatCommands.forEach((item, index) => {
+            map.set(item.id, index)
+        })
+        return map
+    })
+    
     export function togglePalette() {
         showPalette = !showPalette
         if (showPalette) {
@@ -136,7 +145,7 @@
                     {group.category}
                 </div>
                 {#each group.items as item, index (item.id)}
-                    {@const globalIndex = flatCommands.indexOf(item)}
+                    {@const globalIndex = itemIndexMap.get(item.id)}
                     <button
                         class="command-item"
                         class:selected={globalIndex === selectedIndex}
