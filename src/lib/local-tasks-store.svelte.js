@@ -104,11 +104,12 @@ export function clearCompletedTasks() {
 
 export function sortTasks(tasksToSort) {
     // Pre-convert dates to timestamps for faster comparison
+    // Use getTime() directly on Date objects when available, otherwise create new Date
     const tasksWithTimestamps = tasksToSort.map(task => ({
         task,
-        dueTime: task.due ? new Date(task.due).getTime() : null,
-        createdTime: task.createdAt ? new Date(task.createdAt).getTime() : 0,
-        completedTime: task.completedAt ? new Date(task.completedAt).getTime() : null
+        dueTime: task.due instanceof Date ? task.due.getTime() : (task.due ? new Date(task.due).getTime() : null),
+        createdTime: task.createdAt instanceof Date ? task.createdAt.getTime() : (task.createdAt ? new Date(task.createdAt).getTime() : 0),
+        completedTime: task.completedAt instanceof Date ? task.completedAt.getTime() : (task.completedAt ? new Date(task.completedAt).getTime() : null)
     }))
     
     tasksWithTimestamps.sort((a, b) => {

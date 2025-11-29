@@ -91,16 +91,14 @@ class TodoistAPI {
             idToIndex.set(item.id, index)
         })
 
-        // Track indices to delete (in reverse order to avoid index shifting)
-        const indicesToDelete = []
+        // Track IDs to delete
+        const idsToDelete = new Set()
 
         newData.forEach((newItem) => {
             const existingIndex = idToIndex.get(newItem.id)
             
             if (newItem.is_deleted) {
-                if (existingIndex !== undefined) {
-                    indicesToDelete.push(existingIndex)
-                }
+                idsToDelete.add(newItem.id)
             } else {
                 if (existingIndex !== undefined) {
                     this.data[type][existingIndex] = newItem
@@ -110,10 +108,9 @@ class TodoistAPI {
             }
         })
 
-        // Delete items in reverse order to maintain correct indices
-        indicesToDelete.sort((a, b) => b - a)
-        for (const index of indicesToDelete) {
-            this.data[type].splice(index, 1)
+        // Filter out deleted items in a single pass
+        if (idsToDelete.size > 0) {
+            this.data[type] = this.data[type].filter(item => !idsToDelete.has(item.id))
         }
     }
 
