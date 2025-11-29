@@ -79,27 +79,39 @@ class TodoistAPI {
 
     /**
      * Generic merge function for all data types
+     * Optimized to use O(n) lookup with Map instead of O(n²) with findIndex
      */
     mergeData(type, newData) {
         if (!newData) return
         if (!this.data[type]) this.data[type] = []
 
+        // Build a map of id -> index for O(1) lookups
+        const idToIndex = new Map()
+        this.data[type].forEach((item, index) => {
+            idToIndex.set(item.id, index)
+        })
+
+        // Track IDs to delete
+        const idsToDelete = new Set()
+
         newData.forEach((newItem) => {
+            const existingIndex = idToIndex.get(newItem.id)
+            
             if (newItem.is_deleted) {
-                this.data[type] = this.data[type].filter(
-                    (item) => item.id !== newItem.id
-                )
+                idsToDelete.add(newItem.id)
             } else {
-                const existingIndex = this.data[type].findIndex(
-                    (item) => item.id === newItem.id
-                )
-                if (existingIndex >= 0) {
+                if (existingIndex !== undefined) {
                     this.data[type][existingIndex] = newItem
                 } else {
                     this.data[type].push(newItem)
                 }
             }
         })
+
+        // Filter out deleted items in a single pass
+        if (idsToDelete.size > 0) {
+            this.data[type] = this.data[type].filter(item => !idsToDelete.has(item.id))
+        }
     }
 
     /**

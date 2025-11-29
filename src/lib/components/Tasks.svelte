@@ -20,6 +20,13 @@
     
     let taskCount = $derived(tasks.filter((task) => !task.completed).length)
     let completedCount = $derived(tasks.filter((task) => task.completed).length)
+    
+    // Use $derived to avoid recalculating filtered tasks on each render
+    let displayTasks = $derived(
+        showCompleted 
+            ? tasks.filter(task => task.completed)
+            : tasks.filter(task => !task.completed)
+    )
 
     function handleVisibilityChange() {
         if (document.visibilityState === 'visible') {
@@ -71,14 +78,6 @@
         }
     }
 
-    function getDisplayTasks() {
-        if (showCompleted) {
-            return tasks.filter(task => task.completed)
-        } else {
-            return tasks.filter(task => !task.completed)
-        }
-    }
-
     onMount(() => {
         document.addEventListener('visibilitychange', handleVisibilityChange)
     })
@@ -127,7 +126,7 @@
     <br />
     <div class="tasks">
         <div class="tasks-list">
-            {#each getDisplayTasks() as task}
+            {#each displayTasks as task}
                 <div
                     class="task"
                     class:completed={task.completed}
@@ -197,7 +196,7 @@
                     {/if}
                 </div>
             {/each}
-            {#if getDisplayTasks().length === 0}
+            {#if displayTasks.length === 0}
                 <div class="empty-state">
                     {#if showCompleted}
                         No completed tasks
