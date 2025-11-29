@@ -1,40 +1,42 @@
 :root {
-    /* Catppuccin Mocha */
-    --bg-1: #1e1e2e; /* base */
-    --bg-2: #313244; /* surface0 */
-    --bg-3: #45475a; /* surface1 */
-    --bg-4: #585b70; /* surface2 */
-    --txt-4: #6c7086; /* overlay0 */
-    --txt-3: #a6adc8; /* subtext0 */
-    --txt-2: #cdd6f4; /* subtext1 */
-    --txt-1: #f5e0dc; /* text */
-    --txt-err: #f38ba8; /* red */
+    /* Catppuccin Mocha - Minimalist Palette */
+    --bg-1: #1e1e2e; /* base - main background */
+    --bg-2: #252535; /* slightly lighter base for subtle contrast */
+    --bg-3: #313244; /* surface0 - panel backgrounds */
+    --bg-4: #3a3a4a; /* surface1 - borders and subtle elements */
+    --txt-4: #6c7086; /* overlay0 - disabled/inactive text */
+    --txt-3: #9399b8; /* subtext0 - secondary text */
+    --txt-2: #cdd6f4; /* subtext1 - primary text */
+    --txt-1: #f5e0dc; /* text - accent/important text */
+    --txt-err: #f38ba8; /* red - errors */
     
-    /* Catppuccin Mocha Accent Colors */
-    --accent-rosewater: #f5e0dc;
-    --accent-flamingo: #f2cdcd;
-    --accent-pink: #f5c2e7;
-    --accent-mauve: #cba6f7;
-    --accent-red: #f38ba8;
-    --accent-maroon: #eba0ac;
-    --accent-peach: #fab387;
-    --accent-yellow: #f9e2af;
-    --accent-green: #a6e3a1;
-    --accent-teal: #94e2d5;
-    --accent-sky: #89dceb;
-    --accent-sapphire: #74c7ec;
-    --accent-blue: #89b4fa;
-    --accent-lavender: #b4befe;
+    /* Minimal Accent Colors */
+    --accent-lavender: #b4befe; /* main accent */
+    --accent-teal: #94e2d5;   /* success */
+    --accent-mauve: #cba6f7;  /* secondary accent */
+    --accent-sky: #89dceb;    /* info */
+    --accent-sapphire: #74c7ec; /* highlight */
+    --accent-rosewater: #f5e0dc; /* subtle accent */
+    
+    /* Typography */
+    --font-mono: 'Geist Mono Variable', monospace;
+    --font-size-xs: 0.7rem;
+    --font-size-sm: 0.8rem;
+    --font-size-base: 0.9rem;
+    --font-size-lg: 1rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 2rem;
 }
 
 /* ═══════════════════════════════════════════════════════════
-   KEYFRAME ANIMATIONS
+   KEYFRAME ANIMATIONS - Minimal
    ═══════════════════════════════════════════════════════════ */
 
 @keyframes fadeInUp {
     from {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(12px);
     }
     to {
         opacity: 1;
@@ -47,7 +49,7 @@
         opacity: 1;
     }
     50%, 100% {
-        opacity: 0.3;
+        opacity: 0.2;
     }
 }
 
@@ -56,7 +58,7 @@
         opacity: 1;
     }
     50% {
-        opacity: 0.6;
+        opacity: 0.7;
     }
 }
 
@@ -69,39 +71,23 @@
     }
 }
 
-@keyframes glow {
+@keyframes subtleGlow {
     0%, 100% {
-        box-shadow: 0 0 5px var(--bg-3), 0 0 10px var(--bg-3);
+        box-shadow: 0 0 5px rgba(180, 190, 254, 0.1);
     }
     50% {
-        box-shadow: 0 0 10px var(--txt-4), 0 0 20px var(--bg-3), 0 0 30px var(--bg-3);
+        box-shadow: 0 0 15px rgba(180, 190, 254, 0.2);
     }
 }
 
-@keyframes textGlow {
-    0%, 100% {
-        text-shadow: 0 0 5px rgba(180, 190, 254, 0.3);
-    }
-    50% {
-        text-shadow: 0 0 10px rgba(180, 190, 254, 0.5), 0 0 20px rgba(180, 190, 254, 0.2);
-    }
-}
-
-@keyframes slideInRight {
+@keyframes appear {
     from {
-        transform: translateX(100%);
+        opacity: 0;
+        scale: 0.98;
     }
     to {
-        transform: translateX(0);
-    }
-}
-
-@keyframes typing {
-    0%, 100% {
         opacity: 1;
-    }
-    50% {
-        opacity: 0;
+        scale: 1;
     }
 }
 
@@ -244,31 +230,29 @@ button {
 .panel-label,
 .widget-label {
     position: absolute;
-    top: -14px;
-    left: 8px;
-    background: linear-gradient(90deg, var(--bg-1) 0%, var(--bg-2) 100%);
+    top: -8px;
+    left: 0.5rem;
+    background: var(--bg-2);
     color: var(--txt-4);
-    padding: 0 8px;
+    padding: 0 0.5rem;
     z-index: 11;
     text-transform: uppercase;
     letter-spacing: 0.1em;
-    font-size: 0.65rem;
-    border: 1px solid var(--bg-4);
+    font-size: var(--font-size-xs);
+    border: 1px solid var(--bg-3);
     transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    font-family: var(--font-mono);
 }
 
 .widget-label:hover:not(:disabled) {
-    color: var(--txt-3);
-    border-color: var(--txt-4);
-    transform: translateY(-1px);
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.3);
+    color: var(--accent-lavender);
+    border-color: var(--accent-lavender);
 }
 
 .widget-label:disabled {
     cursor: default;
     color: var(--txt-4);
-    opacity: 0.6;
+    opacity: 0.5;
 }
 
 a {
